@@ -18,7 +18,7 @@
     </header>
 
     <main>
-        <button id="random" onclick="randomSound()">Play Random Sound</button>
+        <button id="random" onclick="playNextSong()">Play Next Song</button>
         <section class="Variantlar">
             <h2>Choose the Correct Answer:</h2>
             <div class="Variantlar">
@@ -64,15 +64,33 @@
             return arr;
         })();
 
-        let currentSoundIndex = -1;
+        let shuffledIndices = [];
+        let currentIndex = 0;
 
-        function randomSound() {
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function playNextSong() {
             const feedback = document.getElementById('neetiicee');
             feedback.innerText = '';
-            currentSoundIndex = Math.floor(Math.random() * mySounds.length);
+            if (shuffledIndices.length === 0) {
+                shuffledIndices = Array.from({length: mySounds.length}, (_, i) => i);
+                shuffleArray(shuffledIndices);
+                currentIndex = 0;
+            }
+            const soundIndex = shuffledIndices[currentIndex];
+            currentSoundIndex = soundIndex;
             const audioElement = document.querySelector('.Audio audio');
-            audioElement.src = mySounds[currentSoundIndex];
+            audioElement.src = mySounds[soundIndex];
             audioElement.play();
+            currentIndex++;
+            if (currentIndex >= shuffledIndices.length) {
+                shuffledIndices = [];
+            }
         }
 
         function correctness(button) {
